@@ -1,0 +1,1814 @@
+<!DOCTYPE html>
+<html lang="en" class="h-full bg-slate-900 text-slate-100">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>APCC College - CRM & Web Management Portal</title>
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- FontAwesome v6 CDN -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <!-- Inter Font -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap">
+  
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            apcc: {
+              navy: '#0d233a',
+              blue: '#1a73e8',
+              accent: '#3b82f6',
+              dark: '#081422',
+              card: '#132c47'
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <style>
+    body { font-family: 'Inter', sans-serif; }
+    /* Custom Scrollbar */
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: rgba(13, 35, 58, 0.5); }
+    ::-webkit-scrollbar-thumb { background: rgba(59, 130, 246, 0.4); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(59, 130, 246, 0.8); }
+    
+    .glass-card {
+      background: rgba(19, 44, 71, 0.75);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-nav {
+      background: rgba(13, 35, 58, 0.85);
+      backdrop-filter: blur(16px);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .pulse-online {
+      box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7);
+      animation: pulse-green 2s infinite;
+    }
+    @keyframes pulse-green {
+      0% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0.7); }
+      70% { transform: scale(1); box-shadow: 0 0 0 6px rgba(16, 185, 129, 0); }
+      100% { transform: scale(0.95); box-shadow: 0 0 0 0 rgba(16, 185, 129, 0); }
+    }
+  </style>
+</head>
+<body class="h-full flex flex-col bg-slate-950 text-slate-100 overflow-x-hidden antialiased selection:bg-blue-600 selection:text-white">
+
+  <!-- AUTH / LOGIN / SIGNUP SCREEN CONTAINER -->
+  <div id="auth-screen" class="fixed inset-0 z-50 flex items-center justify-center bg-slate-950 p-4 bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-blue-900/30 via-slate-950 to-slate-950">
+    <div class="w-full max-w-md glass-card rounded-2xl p-8 shadow-2xl border border-slate-800">
+      <div class="text-center mb-8">
+        <div class="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-gradient-to-tr from-blue-600 to-cyan-500 text-white font-extrabold text-2xl shadow-lg shadow-blue-500/30 mb-3">
+          APCC
+        </div>
+        <h1 class="text-2xl font-bold text-white tracking-tight">Accelerated Pathways</h1>
+        <p class="text-xs text-blue-400 font-medium tracking-wider uppercase mt-1">Career College Management System</p>
+      </div>
+
+      <!-- LOGIN FORM -->
+      <form id="login-form" onsubmit="handleLogin(event)" class="space-y-4">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Email / Username</label>
+          <div class="relative">
+            <i class="fa-solid fa-envelope absolute left-3 top-3 text-slate-400 text-sm"></i>
+            <input type="email" id="login-email" required value="miriam@apc.college" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+          </div>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
+          <div class="relative">
+            <i class="fa-solid fa-lock absolute left-3 top-3 text-slate-400 text-sm"></i>
+            <input type="password" id="login-password" required value="password" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl pl-10 pr-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+          </div>
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white font-semibold rounded-xl shadow-lg shadow-blue-600/30 transition duration-200">
+          Sign In to Portal
+        </button>
+        <div class="text-center pt-2">
+          <button type="button" onclick="toggleAuthMode('signup')" class="text-xs text-slate-400 hover:text-blue-400 transition">Don't have an account? <span class="text-blue-400 font-semibold underline">Register Here</span></button>
+        </div>
+      </form>
+
+      <!-- SIGNUP FORM -->
+      <form id="signup-form" onsubmit="handleSignup(event)" class="space-y-4 hidden">
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Full Name</label>
+          <input type="text" id="signup-name" required placeholder="e.g. Bianka Rossi" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Institutional Email</label>
+          <input type="email" id="signup-email" required placeholder="name@apc.college" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Role Request</label>
+          <select id="signup-role" class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+            <option value="TA">Teaching Assistant (TA)</option>
+            <option value="Staff">Staff / Admin Support</option>
+            <option value="Admin">System Administrator</option>
+          </select>
+        </div>
+        <div>
+          <label class="block text-xs font-semibold text-slate-300 uppercase mb-1">Password</label>
+          <input type="password" id="signup-password" required class="w-full bg-slate-900/80 border border-slate-700 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:border-blue-500 text-white transition">
+        </div>
+        <button type="submit" class="w-full py-3 bg-gradient-to-r from-emerald-600 to-teal-600 hover:from-emerald-500 hover:to-teal-500 text-white font-semibold rounded-xl shadow-lg shadow-emerald-600/30 transition duration-200">
+          Request Account Registration
+        </button>
+        <div class="text-center pt-2">
+          <button type="button" onclick="toggleAuthMode('login')" class="text-xs text-slate-400 hover:text-blue-400 transition">Already registered? <span class="text-blue-400 font-semibold underline">Return to Login</span></button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- MAIN SPA APP WRAPPER -->
+  <div id="app-container" class="flex-1 flex overflow-hidden hidden">
+
+    <!-- FIXED SIDEBAR -->
+    <aside class="w-64 bg-slate-900/90 border-r border-slate-800/80 flex flex-col justify-between z-20 flex-shrink-0">
+      <div>
+        <!-- Brand Header -->
+        <div class="p-5 border-b border-slate-800/80 flex items-center space-x-3">
+          <div class="w-10 h-10 rounded-xl bg-gradient-to-br from-blue-600 to-indigo-700 flex items-center justify-center font-black text-lg text-white shadow-md shadow-blue-500/20">
+            APCC
+          </div>
+          <div>
+            <div class="font-bold text-white text-sm tracking-wide leading-tight">APCC College</div>
+            <div class="text-[10px] text-blue-400 font-mono tracking-wider">apc.college</div>
+          </div>
+        </div>
+
+        <!-- Navigation Tabs -->
+        <nav class="p-3 space-y-1">
+          <button onclick="switchTab('tab-dashboard')" id="nav-tab-dashboard" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-blue-400 bg-blue-600/10 border border-blue-500/20">
+            <i class="fa-solid fa-chart-pie w-5 text-center"></i>
+            <span>Executive Dashboard</span>
+          </button>
+
+          <button onclick="switchTab('tab-directory')" id="nav-tab-directory" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+            <i class="fa-solid fa-user-graduate w-5 text-center"></i>
+            <span>Student Directory</span>
+          </button>
+
+          <button onclick="switchTab('tab-followup')" id="nav-tab-followup" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 relative">
+            <i class="fa-solid fa-bell w-5 text-center"></i>
+            <span>Follow-Up Center</span>
+            <span id="nav-badge-tasks" class="ml-auto bg-rose-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full">3</span>
+          </button>
+
+          <button onclick="switchTab('tab-externship')" id="nav-tab-externship" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+            <i class="fa-solid fa-stethoscope w-5 text-center"></i>
+            <span>Externships & Skills</span>
+          </button>
+
+          <button onclick="switchTab('tab-calendar')" id="nav-tab-calendar" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+            <i class="fa-solid fa-calendar-days w-5 text-center"></i>
+            <span>Calendar & Breaks</span>
+          </button>
+
+          <button onclick="switchTab('tab-users')" id="nav-tab-users" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50 relative">
+            <i class="fa-solid fa-users-gear w-5 text-center"></i>
+            <span>User Approvals</span>
+            <span id="nav-pending-count" class="ml-auto bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30">1</span>
+          </button>
+
+          <button onclick="switchTab('tab-reports')" id="nav-tab-reports" class="nav-btn w-full flex items-center space-x-3 px-3.5 py-2.5 rounded-xl text-sm font-medium transition text-slate-400 hover:text-slate-200 hover:bg-slate-800/50">
+            <i class="fa-solid fa-file-invoice-dollar w-5 text-center"></i>
+            <span>Audit & Analytics</span>
+          </button>
+        </nav>
+      </div>
+
+      <!-- TA Workload Balancer Widget -->
+      <div class="p-3 border-t border-slate-800/80">
+        <div class="px-2 mb-2 flex items-center justify-between">
+          <span class="text-[11px] font-bold uppercase tracking-wider text-slate-400">TA Workload Monitor</span>
+          <i class="fa-solid fa-sliders text-xs text-slate-500"></i>
+        </div>
+        <div id="ta-workload-list" class="space-y-2 text-xs">
+          <!-- Dynamic TA capacity counters render here -->
+        </div>
+        <div class="mt-4 pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400">
+          <button onclick="resetSystemData()" class="hover:text-rose-400 transition flex items-center gap-1.5 text-[11px]">
+            <i class="fa-solid fa-rotate-left"></i> Reset Demo Data
+          </button>
+          <button onclick="logout()" class="hover:text-amber-400 transition flex items-center gap-1.5 text-[11px]">
+            <i class="fa-solid fa-right-from-bracket"></i> Logout
+          </button>
+        </div>
+      </div>
+    </aside>
+
+    <!-- CONTENT WRAPPER -->
+    <div class="flex-1 flex flex-col min-w-0 overflow-hidden">
+
+      <!-- TOP BAR / HEADER -->
+      <header class="h-16 glass-nav px-6 flex items-center justify-between z-10 flex-shrink-0">
+        <div class="flex items-center space-x-4">
+          <div class="flex items-center space-x-2">
+            <span class="w-2.5 h-2.5 rounded-full bg-emerald-500 pulse-online"></span>
+            <span class="text-xs font-semibold text-slate-300">Google Sheets Sync Active</span>
+          </div>
+          <span class="text-slate-700">|</span>
+          <span id="current-tab-title" class="text-sm font-bold text-slate-200">Executive Dashboard</span>
+        </div>
+
+        <div class="flex items-center space-x-4">
+          <!-- Quick Log Call Trigger Button -->
+          <button onclick="openQuickCallModal()" class="px-3 py-1.5 bg-blue-600/20 hover:bg-blue-600/30 text-blue-400 border border-blue-500/30 rounded-xl text-xs font-medium transition flex items-center gap-2">
+            <i class="fa-solid fa-phone-volume"></i>
+            <span>Log Call / Action</span>
+          </button>
+
+          <!-- Realtime Pop-Up Alert Center Dropdown -->
+          <div class="relative">
+            <button onclick="toggleAlertMenu()" class="relative p-2 rounded-xl text-slate-300 hover:bg-slate-800 transition">
+              <i class="fa-regular fa-bell text-lg"></i>
+              <span id="alert-counter" class="absolute top-1 right-1 w-2.5 h-2.5 rounded-full bg-rose-500"></span>
+            </button>
+
+            <div id="alert-dropdown" class="hidden absolute right-0 mt-2 w-80 glass-card rounded-2xl shadow-2xl p-4 border border-slate-700 z-50">
+              <div class="flex items-center justify-between pb-2 border-b border-slate-700 mb-3">
+                <span class="text-xs font-bold text-white uppercase tracking-wider">Alert Center</span>
+                <span class="text-[10px] text-blue-400 font-mono">Live Notifications</span>
+              </div>
+              <div id="alert-items-list" class="space-y-2.5 max-h-64 overflow-y-auto text-xs">
+                <!-- Notifications render here -->
+              </div>
+            </div>
+          </div>
+
+          <!-- User Profile Pill -->
+          <div class="flex items-center space-x-3 bg-slate-900 border border-slate-800 rounded-full py-1 px-3">
+            <div id="user-avatar" class="w-7 h-7 rounded-full bg-blue-600 text-white flex items-center justify-center font-bold text-xs">
+              M
+            </div>
+            <div class="text-left">
+              <div id="user-display-name" class="text-xs font-semibold text-white leading-tight">Miriam (TA)</div>
+              <div id="user-display-role" class="text-[10px] text-slate-400">Teaching Assistant</div>
+            </div>
+          </div>
+        </div>
+      </header>
+
+      <!-- MAIN SCROLLABLE CONTENT VIEW AREA -->
+      <main class="flex-1 overflow-y-auto p-6 space-y-6">
+
+        <!-- TAB 1: EXECUTIVE DASHBOARD -->
+        <div id="tab-dashboard" class="tab-content space-y-6">
+          <!-- Metric KPI Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Total Enrolled</span>
+                <span class="p-2 bg-blue-500/10 text-blue-400 rounded-xl text-xs"><i class="fa-solid fa-graduation-cap"></i></span>
+              </div>
+              <div id="metric-total-students" class="text-2xl font-bold text-white mt-2">142</div>
+              <div class="text-[11px] text-emerald-400 mt-1"><i class="fa-solid fa-arrow-trend-up mr-1"></i>+8% vs last month</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Active Students</span>
+                <span class="p-2 bg-emerald-500/10 text-emerald-400 rounded-xl text-xs"><i class="fa-solid fa-user-check"></i></span>
+              </div>
+              <div id="metric-active-students" class="text-2xl font-bold text-white mt-2">118</div>
+              <div class="text-[11px] text-slate-400 mt-1">Status: Activo</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Overdue Contacts (>5d)</span>
+                <span class="p-2 bg-rose-500/10 text-rose-400 rounded-xl text-xs"><i class="fa-solid fa-triangle-exclamation"></i></span>
+              </div>
+              <div id="metric-overdue-contacts" class="text-2xl font-bold text-rose-400 mt-2">4</div>
+              <div class="text-[11px] text-rose-300/80 mt-1">Requires immediate TA call</div>
+            </div>
+
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between">
+                <span class="text-xs font-semibold text-slate-400">Week-1 Check-ins Due</span>
+                <span class="p-2 bg-amber-500/10 text-amber-400 rounded-xl text-xs"><i class="fa-solid fa-clock font-bold"></i></span>
+              </div>
+              <div id="metric-week1-due" class="text-2xl font-bold text-amber-400 mt-2">3</div>
+              <div class="text-[11px] text-amber-300/80 mt-1">7 Days since enrollment</div>
+            </div>
+          </div>
+
+          <!-- Urgent Alert Panel & Recent Call Logs Split Grid -->
+          <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+            <!-- Urgent Action Panel -->
+            <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-fire text-rose-500"></i> Urgent Follow-Up Action Required
+                </h3>
+                <span class="text-xs text-slate-400">Auto-generated</span>
+              </div>
+              <div id="dashboard-urgent-list" class="space-y-3 mt-4 flex-1 overflow-y-auto max-h-80">
+                <!-- Urgent list rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Recent Call Log Feed -->
+            <div class="glass-card rounded-2xl p-5 border border-slate-800 flex flex-col">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-list-check text-blue-400"></i> Recent Communication Logs
+                </h3>
+                <button onclick="openQuickCallModal()" class="text-xs text-blue-400 hover:underline">+ Add Entry</button>
+              </div>
+              <div id="dashboard-call-logs" class="space-y-3 mt-4 flex-1 overflow-y-auto max-h-80">
+                <!-- Call logs rendered dynamically -->
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2: STUDENT DIRECTORY -->
+        <div id="tab-directory" class="tab-content space-y-4 hidden">
+          <!-- Directory Header Toolbar -->
+          <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 glass-card p-4 rounded-2xl border border-slate-800">
+            <div class="relative flex-1">
+              <i class="fa-solid fa-magnifying-glass absolute left-3 top-3 text-slate-400 text-sm"></i>
+              <input type="text" id="directory-search" oninput="renderStudentDirectory()" placeholder="Search student name, ID, course, or TA..." class="w-full bg-slate-900 border border-slate-700 rounded-xl pl-10 pr-4 py-2 text-xs focus:outline-none focus:border-blue-500 text-white">
+            </div>
+            <div class="flex items-center gap-2 flex-wrap">
+              <select id="filter-campus" onchange="renderStudentDirectory()" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-xl px-3 py-2 focus:outline-none">
+                <option value="">All Campuses</option>
+                <option value="Casa Grande">Casa Grande</option>
+                <option value="Phoenix">Phoenix</option>
+                <option value="Prescott">Prescott</option>
+                <option value="Chandler">Chandler</option>
+                <option value="Online">Online</option>
+              </select>
+              <select id="filter-status" onchange="renderStudentDirectory()" class="bg-slate-900 border border-slate-700 text-slate-300 text-xs rounded-xl px-3 py-2 focus:outline-none">
+                <option value="">All Statuses</option>
+                <option value="Activo">Activo</option>
+                <option value="LOA">LOA</option>
+                <option value="Withdrawal">Withdrawal</option>
+                <option value="Graduated">Graduated</option>
+              </select>
+              <button onclick="openAddStudentModal()" class="px-3.5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-semibold rounded-xl text-xs transition shadow-md shadow-blue-600/30">
+                <i class="fa-solid fa-plus mr-1"></i> Add Student
+              </button>
+            </div>
+          </div>
+
+          <!-- Students Table -->
+          <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                  <tr>
+                    <th class="p-3.5">Student</th>
+                    <th class="p-3.5">ID & Campus</th>
+                    <th class="p-3.5">Program & Course</th>
+                    <th class="p-3.5">Assigned TA</th>
+                    <th class="p-3.5">Academic Progress</th>
+                    <th class="p-3.5">Status</th>
+                    <th class="p-3.5 text-right">Actions</th>
+                  </tr>
+                </thead>
+                <tbody id="student-table-body" class="divide-y divide-slate-800/60">
+                  <!-- Student rows rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3: FOLLOW-UP & NOTIFICATION CENTER -->
+        <div id="tab-followup" class="tab-content space-y-6 hidden">
+          <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+            <!-- Filter Column 1: Overdue Inactivity (>5 Days) -->
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+                <span class="text-xs font-bold text-rose-400 uppercase flex items-center gap-1.5">
+                  <i class="fa-solid fa-circle-exclamation"></i> Overdue Contacts (&gt; 5d)
+                </span>
+                <span id="badge-count-overdue" class="bg-rose-500/20 text-rose-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-rose-500/30">0</span>
+              </div>
+              <div id="followup-list-overdue" class="space-y-3 max-h-[600px] overflow-y-auto">
+                <!-- Cards rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Filter Column 2: @Mentioned / Tagged Tasks -->
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+                <span class="text-xs font-bold text-blue-400 uppercase flex items-center gap-1.5">
+                  <i class="fa-solid fa-at"></i> Tagged Tasks & @Mentions
+                </span>
+                <span id="badge-count-tagged" class="bg-blue-500/20 text-blue-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-blue-500/30">0</span>
+              </div>
+              <div id="followup-list-tagged" class="space-y-3 max-h-[600px] overflow-y-auto">
+                <!-- Cards rendered dynamically -->
+              </div>
+            </div>
+
+            <!-- Filter Column 3: Week-1 Check-ins Due -->
+            <div class="glass-card rounded-2xl p-4 border border-slate-800">
+              <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-3">
+                <span class="text-xs font-bold text-amber-400 uppercase flex items-center gap-1.5">
+                  <i class="fa-solid fa-calendar-check"></i> New Student Week-1 Trigger
+                </span>
+                <span id="badge-count-week1" class="bg-amber-500/20 text-amber-400 text-[10px] font-bold px-2 py-0.5 rounded-full border border-amber-500/30">0</span>
+              </div>
+              <div id="followup-list-week1" class="space-y-3 max-h-[600px] overflow-y-auto">
+                <!-- Cards rendered dynamically -->
+              </div>
+            </div>
+
+          </div>
+        </div>
+
+        <!-- TAB 4: EXTERNSHIP & COMPETENCY CHECK-OFF TRACKER -->
+        <div id="tab-externship" class="tab-content space-y-6 hidden">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800">
+            <h3 class="text-sm font-bold text-white mb-2">Clinical Externship & Practical Skills Competency Tracker</h3>
+            <p class="text-xs text-slate-400">Track student clinical hours completion (Target: 160 hrs) and skill check-offs prior to graduation clearance.</p>
+          </div>
+
+          <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4" id="externship-cards-container">
+            <!-- Cards rendered dynamically -->
+          </div>
+        </div>
+
+        <!-- TAB 5: ACADEMIC CALENDAR & CAMPUS BREAKS -->
+        <div id="tab-calendar" class="tab-content space-y-6 hidden">
+          <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+            <!-- Main Calendar Display -->
+            <div class="lg:col-span-2 glass-card rounded-2xl p-5 border border-slate-800">
+              <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+                <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                  <i class="fa-solid fa-calendar-days text-blue-400"></i> APCC Academic Schedule 2026 - 2027
+                </h3>
+                <span class="text-xs text-blue-400 font-mono">Current Semester</span>
+              </div>
+
+              <!-- Interactive Schedule Grid -->
+              <div class="space-y-3">
+                <div class="p-3.5 bg-slate-900/90 rounded-xl border-l-4 border-emerald-500 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-white">Fall Term Start - All Campuses</div>
+                    <div class="text-[11px] text-slate-400">Casa Grande, Phoenix, Prescott, Chandler</div>
+                  </div>
+                  <span class="text-xs font-mono font-bold text-emerald-400">Sept 01, 2026</span>
+                </div>
+
+                <div class="p-3.5 bg-slate-900/90 rounded-xl border-l-4 border-amber-500 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-white">Thanksgiving Institutional Break</div>
+                    <div class="text-[11px] text-slate-400">No classes scheduled</div>
+                  </div>
+                  <span class="text-xs font-mono font-bold text-amber-400">Nov 26 - Nov 28, 2026</span>
+                </div>
+
+                <div class="p-3.5 bg-slate-900/90 rounded-xl border-l-4 border-rose-500 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-white">Winter Break & Campus Closure</div>
+                    <div class="text-[11px] text-slate-400">All administrative offices & labs closed</div>
+                  </div>
+                  <span class="text-xs font-mono font-bold text-rose-400">Dec 21 - Jan 03, 2027</span>
+                </div>
+
+                <div class="p-3.5 bg-slate-900/90 rounded-xl border-l-4 border-blue-500 flex items-center justify-between">
+                  <div>
+                    <div class="text-xs font-bold text-white">Spring Clinical Rotation Begins</div>
+                    <div class="text-[11px] text-slate-400">Medical Assistant & Phlebotomy Cohorts</div>
+                  </div>
+                  <span class="text-xs font-mono font-bold text-blue-400">Jan 18, 2027</span>
+                </div>
+              </div>
+            </div>
+
+            <!-- TA Shift Coverage Schedule -->
+            <div class="glass-card rounded-2xl p-5 border border-slate-800">
+              <h3 class="text-sm font-bold text-white pb-3 border-b border-slate-800 mb-4 flex items-center gap-2">
+                <i class="fa-solid fa-clock text-indigo-400"></i> TA On-Call Shift Coverage
+              </h3>
+              <div class="space-y-3 text-xs">
+                <div class="p-3 bg-slate-900/80 rounded-xl flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-white">Miriam (Lead TA)</div>
+                    <div class="text-[10px] text-slate-400">Casa Grande / Phoenix</div>
+                  </div>
+                  <span class="px-2 py-1 bg-blue-500/20 text-blue-400 rounded-lg font-mono">Mon - Thu</span>
+                </div>
+
+                <div class="p-3 bg-slate-900/80 rounded-xl flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-white">Bianka (TA)</div>
+                    <div class="text-[10px] text-slate-400">Prescott / Chandler</div>
+                  </div>
+                  <span class="px-2 py-1 bg-emerald-500/20 text-emerald-400 rounded-lg font-mono">Tue - Fri</span>
+                </div>
+
+                <div class="p-3 bg-slate-900/80 rounded-xl flex items-center justify-between">
+                  <div>
+                    <div class="font-semibold text-white">Carlos (TA)</div>
+                    <div class="text-[10px] text-slate-400">Online Support</div>
+                  </div>
+                  <span class="px-2 py-1 bg-purple-500/20 text-purple-400 rounded-lg font-mono">Wed - Sat</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 6: USER MANAGEMENT & ACCOUNT APPROVALS -->
+        <div id="tab-users" class="tab-content space-y-6 hidden">
+          <div class="glass-card p-5 rounded-2xl border border-slate-800">
+            <div class="flex items-center justify-between">
+              <div>
+                <h3 class="text-sm font-bold text-white">User Accounts & Self-Registration Approvals</h3>
+                <p class="text-xs text-slate-400 mt-0.5">Admin Control Panel: Approve pending staff accounts and assign system roles.</p>
+              </div>
+              <span id="users-pending-badge-header" class="px-3 py-1 bg-amber-500/20 text-amber-400 border border-amber-500/30 text-xs font-bold rounded-full">
+                1 Pending Approval
+              </span>
+            </div>
+          </div>
+
+          <div class="glass-card rounded-2xl border border-slate-800 overflow-hidden">
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                  <tr>
+                    <th class="p-3.5">User</th>
+                    <th class="p-3.5">Email</th>
+                    <th class="p-3.5">Requested Role</th>
+                    <th class="p-3.5">Registration Date</th>
+                    <th class="p-3.5">Status</th>
+                    <th class="p-3.5 text-right">Approval Action</th>
+                  </tr>
+                </thead>
+                <tbody id="user-accounts-table" class="divide-y divide-slate-800/60">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 7: AUDIT LOGS & MONTHLY REPORTS -->
+        <div id="tab-reports" class="tab-content space-y-6 hidden">
+          <!-- Analytical Overview Cards -->
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <div class="glass-card p-4 rounded-2xl border border-slate-800">
+              <div class="text-xs text-slate-400 font-medium">Retention Rate</div>
+              <div class="text-2xl font-bold text-emerald-400 mt-1">92.4%</div>
+              <div class="text-[10px] text-slate-500 mt-1">Target: &gt; 90%</div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border border-slate-800">
+              <div class="text-xs text-slate-400 font-medium">Withdrawal Rate</div>
+              <div class="text-2xl font-bold text-rose-400 mt-1">4.2%</div>
+              <div class="text-[10px] text-slate-500 mt-1">6 Withdrawals this term</div>
+            </div>
+
+            <div class="glass-card p-4 rounded-2xl border border-slate-800">
+              <div class="text-xs text-slate-400 font-medium">Total Calls & Touches Logged</div>
+              <div id="report-total-calls" class="text-2xl font-bold text-blue-400 mt-1">184</div>
+              <div class="text-[10px] text-slate-500 mt-1">Across all 5 campuses</div>
+            </div>
+          </div>
+
+          <!-- Comprehensive System Audit Trail -->
+          <div class="glass-card rounded-2xl p-5 border border-slate-800">
+            <div class="flex items-center justify-between pb-3 border-b border-slate-800 mb-4">
+              <h3 class="text-sm font-bold text-white flex items-center gap-2">
+                <i class="fa-solid fa-shield-halved text-indigo-400"></i> System Audit Trail ("Who Did What")
+              </h3>
+              <span class="text-xs font-mono text-slate-400">Synchronized with Google Sheets</span>
+            </div>
+
+            <div class="overflow-x-auto">
+              <table class="w-full text-left text-xs">
+                <thead class="bg-slate-900/80 text-slate-400 uppercase font-bold border-b border-slate-800">
+                  <tr>
+                    <th class="p-3">Timestamp</th>
+                    <th class="p-3">User</th>
+                    <th class="p-3">Role</th>
+                    <th class="p-3">Action Performed</th>
+                    <th class="p-3">Target Record</th>
+                  </tr>
+                </thead>
+                <tbody id="audit-trail-body" class="divide-y divide-slate-800/60 font-mono text-[11px]">
+                  <!-- Rendered dynamically -->
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+      </main>
+    </div>
+  </div>
+
+  <!-- MODAL: FULL DEMOGRAPHIC STUDENT PROFILE (EDIT & VIEW) -->
+  <div id="student-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card w-full max-w-4xl rounded-2xl shadow-2xl border border-slate-700 max-h-[90vh] flex flex-col overflow-hidden">
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <div class="flex items-center space-x-3">
+          <div id="modal-avatar-preview" class="w-12 h-12 rounded-full bg-slate-800 border-2 border-blue-500 overflow-hidden flex-shrink-0 flex items-center justify-center text-slate-400 font-bold text-lg">
+            <i class="fa-solid fa-user"></i>
+          </div>
+          <div>
+            <h2 id="modal-student-name-title" class="text-base font-bold text-white">Student Profile</h2>
+            <span id="modal-student-id-subtitle" class="text-xs font-mono text-blue-400">ID: APCC-0000</span>
+          </div>
+        </div>
+        <button onclick="closeStudentModal()" class="text-slate-400 hover:text-white p-2 rounded-xl text-lg">
+          <i class="fa-solid fa-xmark"></i>
+        </button>
+      </div>
+
+      <!-- Modal Body (Scrollable Form) -->
+      <div class="p-6 overflow-y-auto flex-1 space-y-6 text-xs">
+        <input type="hidden" id="edit-student-id">
+
+        <!-- Photo & Basic Demographics -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-blue-400 uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1">1. Demographic Information & Photo</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div class="sm:col-span-2">
+              <label class="block text-slate-400 mb-1">Avatar / Photo URL</label>
+              <input type="text" id="edit-photo-url" oninput="updateModalAvatarPreview(this.value)" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Full Student Name</label>
+              <input type="text" id="edit-name" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Date of Birth (DOB)</label>
+              <input type="date" id="edit-dob" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Age</label>
+              <input type="number" id="edit-age" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Gender</label>
+              <select id="edit-gender" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="Female">Female</option>
+                <option value="Male">Male</option>
+                <option value="Non-Binary">Non-Binary</option>
+                <option value="Prefer not to say">Prefer not to say</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">GED / HSD Status</label>
+              <select id="edit-ged-status" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="High School Diploma">High School Diploma</option>
+                <option value="GED Verified">GED Verified</option>
+                <option value="In Progress">In Progress</option>
+              </select>
+            </div>
+            <div class="sm:col-span-2">
+              <label class="block text-slate-400 mb-1">High School Attended</label>
+              <input type="text" id="edit-highschool" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Contact & Emergency Info -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-blue-400 uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1">2. Contact Details & Emergency Contacts</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-slate-400 mb-1">Phone Number</label>
+              <input type="text" id="edit-phone" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Institutional Email</label>
+              <input type="email" id="edit-inst-email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Personal Email</label>
+              <input type="email" id="edit-pers-email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div class="sm:col-span-3">
+              <label class="block text-slate-400 mb-1">Mailing Address</label>
+              <input type="text" id="edit-address" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Emergency Contact Name</label>
+              <input type="text" id="edit-emg-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Emergency Contact Phone</label>
+              <input type="text" id="edit-emg-phone" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Relationship</label>
+              <input type="text" id="edit-emg-rel" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Parent / Guardian Name</label>
+              <input type="text" id="edit-parent-name" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Parent / Guardian Phone</label>
+              <input type="text" id="edit-parent-phone" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Parent / Guardian Email</label>
+              <input type="email" id="edit-parent-email" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Academic & Campus Enrollment -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-blue-400 uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1">3. Enrollment & Campus Details</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+            <div>
+              <label class="block text-slate-400 mb-1">Campus Location</label>
+              <select id="edit-campus" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="Casa Grande">Casa Grande</option>
+                <option value="Phoenix">Phoenix</option>
+                <option value="Prescott">Prescott</option>
+                <option value="Chandler">Chandler</option>
+                <option value="Online">Online</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Classroom / Section</label>
+              <input type="text" id="edit-classroom" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Assigned TA</label>
+              <select id="edit-assigned-ta" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="Miriam">Miriam</option>
+                <option value="Bianka">Bianka</option>
+                <option value="Carlos">Carlos</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Course / Program</label>
+              <input type="text" id="edit-course" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Credentials Pursued</label>
+              <input type="text" id="edit-credentials" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Enrollment Date</label>
+              <input type="date" id="edit-enrollment-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Start Date</label>
+              <input type="date" id="edit-start-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">End Date / Expected Grad</label>
+              <input type="date" id="edit-end-date" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Status</label>
+              <select id="edit-status" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+                <option value="Activo">Activo</option>
+                <option value="LOA">LOA</option>
+                <option value="Withdrawal">Withdrawal</option>
+                <option value="Graduated">Graduated</option>
+              </select>
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Scholarship Type</label>
+              <input type="text" id="edit-scholarship" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Total Tuition ($)</label>
+              <input type="number" id="edit-tuition" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Remaining Balance ($)</label>
+              <input type="number" id="edit-balance" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Document Links, Medical Alerts & Fun Facts -->
+        <div class="space-y-3">
+          <h4 class="font-bold text-blue-400 uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1">4. Documents, Medical Alerts & Curiosities</h4>
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-slate-400 mb-1">Google Drive Folder URL</label>
+              <input type="text" id="edit-drive-url" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Enrollment Agreement PDF URL</label>
+              <input type="text" id="edit-pdf-url" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Medical Hazard / Alerts (e.g. Latex Allergy)</label>
+              <input type="text" id="edit-medical-alerts" placeholder="Latex Allergy, Asthma, Diabetes" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+            <div>
+              <label class="block text-slate-400 mb-1">Curiosities / Fun Facts</label>
+              <input type="text" id="edit-fun-facts" placeholder="Plays violin, Speaks 3 languages" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            </div>
+          </div>
+        </div>
+
+        <!-- Student Call History Timeline inside Modal -->
+        <div class="space-y-3 pt-2">
+          <h4 class="font-bold text-blue-400 uppercase tracking-wider text-[11px] border-b border-slate-800 pb-1">5. Student Communication & Follow-Up Log</h4>
+          <div id="modal-student-call-history" class="space-y-2 max-h-48 overflow-y-auto bg-slate-900/50 p-3 rounded-xl border border-slate-800">
+            <!-- Timeline items rendered dynamically -->
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Modal Footer -->
+      <div class="px-6 py-4 border-t border-slate-800 flex items-center justify-between bg-slate-900/50">
+        <button onclick="closeStudentModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold">Cancel</button>
+        <button onclick="saveStudentFromModal()" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 text-white rounded-xl text-xs font-bold shadow-lg shadow-blue-600/30">
+          Save Student Record
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: QUICK CALL & TASK LOG ENGINE (WITH @MENTIONS) -->
+  <div id="call-modal" class="fixed inset-0 z-50 bg-slate-950/80 backdrop-blur-sm flex items-center justify-center p-4 hidden">
+    <div class="glass-card w-full max-w-lg rounded-2xl shadow-2xl border border-slate-700 p-6 space-y-4 text-xs">
+      <div class="flex items-center justify-between border-b border-slate-800 pb-3">
+        <h3 class="text-sm font-bold text-white flex items-center gap-2">
+          <i class="fa-solid fa-phone text-blue-400"></i> Log Call or Tag TA Action
+        </h3>
+        <button onclick="closeCallModal()" class="text-slate-400 hover:text-white"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+
+      <form onsubmit="handleSaveCallLog(event)" class="space-y-3">
+        <div>
+          <label class="block text-slate-400 mb-1">Select Student</label>
+          <select id="call-student-id" required class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            <!-- Options populated dynamically -->
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Interaction Type</label>
+          <select id="call-type" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            <option value="Phone Call">Phone Call</option>
+            <option value="Email Sent">Email Sent</option>
+            <option value="In-Person Meeting">In-Person Meeting</option>
+            <option value="Task Tagged (@Mention)">Task Tagged (@Mention)</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Outcome / Status</label>
+          <select id="call-outcome" class="w-full bg-slate-900 border border-slate-700 rounded-xl px-3 py-2 text-white">
+            <option value="Contacted - Satisfactory">Contacted - Satisfactory</option>
+            <option value="Left Voicemail">Left Voicemail</option>
+            <option value="Requires Escalation">Requires Escalation</option>
+            <option value="Task Delegated">Task Delegated</option>
+          </select>
+        </div>
+
+        <div>
+          <label class="block text-slate-400 mb-1">Notes & @Mentions (e.g., <span class="text-blue-400">@Miriam check vitals</span> or <span class="text-blue-400">@Bianka call LOA</span>)</label>
+          <textarea id="call-notes" rows="3" required placeholder="Write meeting summary or tag TAs using @Miriam or @Bianka..." class="w-full bg-slate-900 border border-slate-700 rounded-xl p-3 text-white focus:outline-none focus:border-blue-500"></textarea>
+        </div>
+
+        <div class="pt-2 flex justify-end space-x-2">
+          <button type="button" onclick="closeCallModal()" class="px-4 py-2 bg-slate-800 text-slate-300 rounded-xl">Cancel</button>
+          <button type="submit" class="px-4 py-2 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl shadow-md shadow-blue-600/30">Save Log & Dispatch Tag</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- APPLICATION LOGIC & MOCK GOOGLE APPS SCRIPT BRIDGE SIMULATOR -->
+  <script>
+    /* ==========================================================================
+       1. INITIAL MOCK DATA & APP STATE MANAGEMENT
+       ========================================================================== */
+    const INITIAL_USERS = [
+      { id: 'u1', name: 'Miriam', email: 'miriam@apc.college', role: 'TA', status: 'Approved' },
+      { id: 'u2', name: 'Bianka', email: 'bianka@apc.college', role: 'TA', status: 'Approved' },
+      { id: 'u3', name: 'Carlos', email: 'carlos@apc.college', role: 'TA', status: 'Approved' },
+      { id: 'u4', name: 'Dr. Sarah Smith', email: 'sarah@apc.college', role: 'Admin', status: 'Approved' },
+      { id: 'u5', name: 'Elena Gomez', email: 'elena@apc.college', role: 'Staff', status: 'Pending Approval' }
+    ];
+
+    const INITIAL_STUDENTS = [
+      {
+        id: 'APCC-1001',
+        name: 'Sofia Ramirez',
+        photo: 'https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=150',
+        dob: '2002-04-12',
+        age: 24,
+        gender: 'Female',
+        gedStatus: 'High School Diploma',
+        highschool: 'Casa Grande Union High',
+        phone: '(520) 555-0192',
+        instEmail: 'sofia.r@student.apc.college',
+        persEmail: 'sofia.ramirez99@gmail.com',
+        address: '1420 N Trekell Rd, Casa Grande, AZ',
+        emgName: 'Maria Ramirez',
+        emgPhone: '(520) 555-0199',
+        emgRel: 'Mother',
+        parentName: 'Maria Ramirez',
+        parentPhone: '(520) 555-0199',
+        parentEmail: 'maria.r@gmail.com',
+        campus: 'Casa Grande',
+        classroom: 'Lab 201-A',
+        assignedTa: 'Miriam',
+        course: 'Medical Assistant (MA)',
+        credentials: 'CMA / Phlebotomy Cert',
+        enrollmentDate: '2026-09-01',
+        startDate: '2026-09-08',
+        endDate: '2027-05-30',
+        status: 'Activo',
+        scholarship: 'APCC Future Healthcare Grant',
+        tuition: 8500,
+        balance: 1200,
+        driveUrl: 'https://drive.google.com',
+        pdfUrl: 'https://apc.college/agreement.pdf',
+        medicalAlerts: 'Latex Allergy (Severe)',
+        funFacts: 'Bilingual in English/Spanish, aspires to be ER Nurse',
+        lastContactDate: '2026-10-18', // 2 days ago
+        progressPercent: 78,
+        externshipHours: 110,
+        skillsChecklist: ['Vital Signs', 'Phlebotomy', 'EKG Placement', 'EHR Entry']
+      },
+      {
+        id: 'APCC-1002',
+        name: 'Jacob Thorne',
+        photo: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?w=150',
+        dob: '2001-11-05',
+        age: 25,
+        gender: 'Male',
+        gedStatus: 'GED Verified',
+        highschool: 'Phoenix Central High',
+        phone: '(602) 555-8821',
+        instEmail: 'jacob.t@student.apc.college',
+        persEmail: 'jthorne2001@yahoo.com',
+        address: '3300 N Central Ave, Phoenix, AZ',
+        emgName: 'Robert Thorne',
+        emgPhone: '(602) 555-8800',
+        emgRel: 'Father',
+        parentName: 'Robert Thorne',
+        parentPhone: '(602) 555-8800',
+        parentEmail: 'rthorne@yahoo.com',
+        campus: 'Phoenix',
+        classroom: 'Room 104',
+        assignedTa: 'Bianka',
+        course: 'Dental Assistant (DA)',
+        credentials: 'RDA State Certification',
+        enrollmentDate: '2026-08-15',
+        startDate: '2026-08-20',
+        endDate: '2027-04-15',
+        status: 'Activo',
+        scholarship: 'State Workforce Grant',
+        tuition: 9200,
+        balance: 450,
+        driveUrl: 'https://drive.google.com',
+        pdfUrl: 'https://apc.college/agreement.pdf',
+        medicalAlerts: 'None',
+        funFacts: 'Volunteers at animal shelter on weekends',
+        lastContactDate: '2026-10-10', // 10 days ago -> OVERDUE
+        progressPercent: 62,
+        externshipHours: 85,
+        skillsChecklist: ['Dental X-Rays', 'Sterilization', 'Chairside Support']
+      },
+      {
+        id: 'APCC-1003',
+        name: 'Emily Vance',
+        photo: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=150',
+        dob: '2003-02-19',
+        age: 23,
+        gender: 'Female',
+        gedStatus: 'High School Diploma',
+        highschool: 'Prescott High School',
+        phone: '(928) 555-3411',
+        instEmail: 'emily.v@student.apc.college',
+        persEmail: 'emilyvance@outlook.com',
+        address: '810 E Sheldon St, Prescott, AZ',
+        emgName: 'Clara Vance',
+        emgPhone: '(928) 555-3400',
+        emgRel: 'Mother',
+        parentName: 'Clara Vance',
+        parentPhone: '(928) 555-3400',
+        parentEmail: 'cvance@outlook.com',
+        campus: 'Prescott',
+        classroom: 'Lab 12',
+        assignedTa: 'Miriam',
+        course: 'Pharmacy Technician',
+        credentials: 'CPhT License',
+        enrollmentDate: '2026-10-14', // Joined 6 days ago -> Week 1 Checkin
+        startDate: '2026-10-15',
+        endDate: '2027-06-20',
+        status: 'Activo',
+        scholarship: 'APCC Merit Scholarship',
+        tuition: 7800,
+        balance: 2000,
+        driveUrl: 'https://drive.google.com',
+        pdfUrl: 'https://apc.college/agreement.pdf',
+        medicalAlerts: 'Asthma (Uses inhaler)',
+        funFacts: 'Competitive marathon runner',
+        lastContactDate: '2026-10-15',
+        progressPercent: 15,
+        externshipHours: 10,
+        skillsChecklist: ['Prescription Calculation', 'Compounding']
+      }
+    ];
+
+    const INITIAL_CALL_LOGS = [
+      { id: 'cl1', studentId: 'APCC-1001', studentName: 'Sofia Ramirez', user: 'Miriam', type: 'Phone Call', outcome: 'Contacted - Satisfactory', notes: 'Checked regarding lab schedule. Student is progressing smoothly.', timestamp: '2026-10-18 14:30' },
+      { id: 'cl2', studentId: 'APCC-1002', studentName: 'Jacob Thorne', user: 'Bianka', type: 'Task Tagged (@Mention)', outcome: 'Task Delegated', notes: '@Miriam check vital signs and call regarding LOA status.', timestamp: '2026-10-19 09:15' }
+    ];
+
+    const INITIAL_AUDIT_LOGS = [
+      { timestamp: '2026-10-20 08:00', user: 'Miriam', role: 'TA', action: 'Login', target: 'System Session' },
+      { timestamp: '2026-10-20 08:15', user: 'Miriam', role: 'TA', action: 'Update Student', target: 'Sofia Ramirez (APCC-1001)' }
+    ];
+
+    // State Initialization with LocalStorage
+    let state = {
+      users: JSON.parse(localStorage.getItem('apcc_users')) || INITIAL_USERS,
+      students: JSON.parse(localStorage.getItem('apcc_students')) || INITIAL_STUDENTS,
+      callLogs: JSON.parse(localStorage.getItem('apcc_call_logs')) || INITIAL_CALL_LOGS,
+      auditLogs: JSON.parse(localStorage.getItem('apcc_audit_logs')) || INITIAL_AUDIT_LOGS,
+      currentUser: JSON.parse(localStorage.getItem('apcc_current_user')) || null
+    };
+
+    function saveState() {
+      localStorage.setItem('apcc_users', JSON.stringify(state.users));
+      localStorage.setItem('apcc_students', JSON.stringify(state.students));
+      localStorage.setItem('apcc_call_logs', JSON.stringify(state.callLogs));
+      localStorage.setItem('apcc_audit_logs', JSON.stringify(state.auditLogs));
+      if (state.currentUser) {
+        localStorage.setItem('apcc_current_user', JSON.stringify(state.currentUser));
+      }
+    }
+
+    function addAuditLog(action, target) {
+      if (!state.currentUser) return;
+      const log = {
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16),
+        user: state.currentUser.name,
+        role: state.currentUser.role,
+        action: action,
+        target: target
+      };
+      state.auditLogs.unshift(log);
+      saveState();
+      renderAuditLogs();
+    }
+
+    /* ==========================================================================
+       2. AUTHENTICATION & APPROVAL WORKFLOW
+       ========================================================================== */
+    function toggleAuthMode(mode) {
+      if (mode === 'signup') {
+        document.getElementById('login-form').classList.add('hidden');
+        document.getElementById('signup-form').classList.remove('hidden');
+      } else {
+        document.getElementById('signup-form').classList.add('hidden');
+        document.getElementById('login-form').classList.remove('hidden');
+      }
+    }
+
+    function handleLogin(e) {
+      e.preventDefault();
+      const email = document.getElementById('login-email').value.trim();
+      const user = state.users.find(u => u.email.toLowerCase() === email.toLowerCase());
+
+      if (!user) {
+        alert('User email not found. Please register an account first.');
+        return;
+      }
+      if (user.status === 'Pending Approval') {
+        alert('Your account is currently PENDING APPROVAL by a System Administrator. Please contact admin@apc.college.');
+        return;
+      }
+
+      state.currentUser = user;
+      saveState();
+      addAuditLog('User Login', 'Portal Session Started');
+      bootApp();
+    }
+
+    function handleSignup(e) {
+      e.preventDefault();
+      const name = document.getElementById('signup-name').value.trim();
+      const email = document.getElementById('signup-email').value.trim();
+      const role = document.getElementById('signup-role').value;
+
+      const newUser = {
+        id: 'u' + (state.users.length + 1),
+        name: name,
+        email: email,
+        role: role,
+        status: 'Pending Approval'
+      };
+
+      state.users.push(newUser);
+      saveState();
+      alert('Registration successful! Your account is set to PENDING APPROVAL. An Administrator must approve your access before login.');
+      toggleAuthMode('login');
+      renderUserManagement();
+    }
+
+    function logout() {
+      addAuditLog('User Logout', 'Session Ended');
+      state.currentUser = null;
+      localStorage.removeItem('apcc_current_user');
+      document.getElementById('app-container').classList.add('hidden');
+      document.getElementById('auth-screen').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       3. NAVIGATION & TAB SWITCHING
+       ========================================================================== */
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.add('hidden'));
+      document.querySelectorAll('.nav-btn').forEach(btn => {
+        btn.classList.remove('text-blue-400', 'bg-blue-600/10', 'border', 'border-blue-500/20');
+        btn.classList.add('text-slate-400');
+      });
+
+      document.getElementById(tabId).classList.remove('hidden');
+      const activeNavBtn = document.getElementById('nav-' + tabId);
+      if (activeNavBtn) {
+        activeNavBtn.classList.add('text-blue-400', 'bg-blue-600/10', 'border', 'border-blue-500/20');
+        activeNavBtn.classList.remove('text-slate-400');
+      }
+
+      const titles = {
+        'tab-dashboard': 'Executive Dashboard & Call Logs',
+        'tab-directory': 'Student Directory & Demographic Profiles',
+        'tab-followup': 'Smart Follow-Up Engine & Task Alerts',
+        'tab-externship': 'Clinical Externship & Skills Tracker',
+        'tab-calendar': 'Academic Calendar & Campus Breaks',
+        'tab-users': 'User Account Approvals & Access Control',
+        'tab-reports': 'System Audit Logs & Monthly Analytics'
+      };
+      document.getElementById('current-tab-title').textContent = titles[tabId] || 'APCC Portal';
+    }
+
+    /* ==========================================================================
+       4. DASHBOARD & RENDER ENGINE
+       ========================================================================== */
+    function bootApp() {
+      document.getElementById('auth-screen').classList.add('hidden');
+      document.getElementById('app-container').classList.remove('hidden');
+
+      // Update User UI Pill
+      document.getElementById('user-display-name').textContent = `${state.currentUser.name} (${state.currentUser.role})`;
+      document.getElementById('user-display-role').textContent = state.currentUser.role === 'Admin' ? 'System Administrator' : 'Teaching Assistant';
+      document.getElementById('user-avatar').textContent = state.currentUser.name.charAt(0);
+
+      // Render Modules
+      renderTaWorkload();
+      renderDashboardMetrics();
+      renderStudentDirectory();
+      renderFollowUpCenter();
+      renderExternships();
+      renderUserManagement();
+      renderAuditLogs();
+      renderNotifications();
+      populateStudentSelectDropdowns();
+    }
+
+    function renderTaWorkload() {
+      const taList = ['Miriam', 'Bianka', 'Carlos'];
+      const container = document.getElementById('ta-workload-list');
+      container.innerHTML = '';
+
+      taList.forEach(taName => {
+        const count = state.students.filter(s => s.assignedTa === taName && s.status === 'Activo').length;
+        container.innerHTML += `
+          <div class="flex items-center justify-between p-2 bg-slate-900/60 rounded-xl border border-slate-800">
+            <span class="text-slate-300 font-medium flex items-center gap-1.5">
+              <i class="fa-solid fa-user-nurse text-blue-400 text-[10px]"></i> TA ${taName}
+            </span>
+            <span class="font-mono font-bold ${count > 15 ? 'text-rose-400' : 'text-emerald-400'} bg-slate-950 px-2 py-0.5 rounded-md border border-slate-800">
+              ${count} Students
+            </span>
+          </div>
+        `;
+      });
+    }
+
+    function renderDashboardMetrics() {
+      const total = state.students.length;
+      const active = state.students.filter(s => s.status === 'Activo').length;
+      
+      // Calculate overdue > 5 days
+      const overdue = state.students.filter(s => {
+        if (!s.lastContactDate) return true;
+        const diffDays = Math.floor((new Date() - new Date(s.lastContactDate)) / (1000 * 60 * 60 * 24));
+        return diffDays > 5;
+      }).length;
+
+      // Calculate Week 1 check-in (enrollment within 7 days)
+      const week1 = state.students.filter(s => {
+        const diffDays = Math.floor((new Date() - new Date(s.enrollmentDate)) / (1000 * 60 * 60 * 24));
+        return diffDays <= 7 && diffDays >= 0;
+      }).length;
+
+      document.getElementById('metric-total-students').textContent = total;
+      document.getElementById('metric-active-students').textContent = active;
+      document.getElementById('metric-overdue-contacts').textContent = overdue;
+      document.getElementById('metric-week1-due').textContent = week1;
+
+      // Render Urgent Action Panel
+      const urgentContainer = document.getElementById('dashboard-urgent-list');
+      urgentContainer.innerHTML = '';
+
+      state.students.forEach(s => {
+        const diffDays = Math.floor((new Date() - new Date(s.lastContactDate)) / (1000 * 60 * 60 * 24));
+        if (diffDays > 5) {
+          urgentContainer.innerHTML += `
+            <div class="p-3 bg-rose-500/10 border border-rose-500/20 rounded-xl flex items-center justify-between">
+              <div>
+                <div class="font-bold text-white text-xs">${s.name} <span class="text-[10px] text-slate-400 font-mono">(${s.id})</span></div>
+                <div class="text-[11px] text-rose-300">No contact in ${diffDays} days • Assigned: TA ${s.assignedTa}</div>
+              </div>
+              <button onclick="openQuickCallForStudent('${s.id}')" class="px-2.5 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-[10px] font-bold">
+                Call Now
+              </button>
+            </div>
+          `;
+        }
+      });
+
+      if (urgentContainer.innerHTML === '') {
+        urgentContainer.innerHTML = `<div class="text-xs text-slate-500 text-center py-4">No overdue follow-up actions flagged. Great job!</div>`;
+      }
+
+      // Render Dashboard Recent Calls
+      const callContainer = document.getElementById('dashboard-call-logs');
+      callContainer.innerHTML = '';
+
+      state.callLogs.slice(0, 5).forEach(c => {
+        callContainer.innerHTML += `
+          <div class="p-3 bg-slate-900/80 rounded-xl border border-slate-800 text-xs">
+            <div class="flex items-center justify-between text-slate-400 text-[10px]">
+              <span><i class="fa-solid fa-user text-blue-400 mr-1"></i>${c.user} → ${c.studentName}</span>
+              <span class="font-mono">${c.timestamp}</span>
+            </div>
+            <div class="font-semibold text-white mt-1">${c.type}: <span class="text-slate-300 font-normal">${c.notes}</span></div>
+          </div>
+        `;
+      });
+    }
+
+    /* ==========================================================================
+       5. STUDENT DIRECTORY & DEMOGRAPHIC MODAL ENGINE
+       ========================================================================== */
+    function renderStudentDirectory() {
+      const search = document.getElementById('directory-search').value.toLowerCase();
+      const campusFilter = document.getElementById('filter-campus').value;
+      const statusFilter = document.getElementById('filter-status').value;
+
+      const tbody = document.getElementById('student-table-body');
+      tbody.innerHTML = '';
+
+      const filtered = state.students.filter(s => {
+        const matchesSearch = s.name.toLowerCase().includes(search) || 
+                              s.id.toLowerCase().includes(search) || 
+                              s.course.toLowerCase().includes(search) ||
+                              s.assignedTa.toLowerCase().includes(search);
+        const matchesCampus = !campusFilter || s.campus === campusFilter;
+        const matchesStatus = !statusFilter || s.status === statusFilter;
+        return matchesSearch && matchesCampus && matchesStatus;
+      });
+
+      filtered.forEach(s => {
+        const statusColors = {
+          'Activo': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+          'LOA': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+          'Withdrawal': 'bg-rose-500/10 text-rose-400 border-rose-500/30',
+          'Graduated': 'bg-blue-500/10 text-blue-400 border-blue-500/30'
+        };
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3.5 flex items-center space-x-3">
+              <img src="${s.photo}" onerror="this.src='https://placehold.co/100x100/1e293b/white?text=APCC'" class="w-9 h-9 rounded-full object-cover border border-slate-700">
+              <div>
+                <div class="font-bold text-white">${s.name}</div>
+                <div class="text-[10px] text-slate-400">${s.instEmail}</div>
+              </div>
+            </td>
+            <td class="p-3.5">
+              <div class="font-mono text-blue-400 font-semibold">${s.id}</div>
+              <div class="text-[10px] text-slate-400"><i class="fa-solid fa-location-dot mr-1"></i>${s.campus}</div>
+            </td>
+            <td class="p-3.5">
+              <div class="font-semibold text-slate-200">${s.course}</div>
+              <div class="text-[10px] text-slate-400">${s.credentials}</div>
+            </td>
+            <td class="p-3.5">
+              <span class="px-2 py-1 bg-slate-800 rounded-lg border border-slate-700 font-medium text-slate-300">
+                TA ${s.assignedTa}
+              </span>
+            </td>
+            <td class="p-3.5 w-32">
+              <div class="flex items-center justify-between text-[10px] font-mono text-slate-400 mb-1">
+                <span>Progress</span>
+                <span>${s.progressPercent}%</span>
+              </div>
+              <div class="w-full bg-slate-800 rounded-full h-1.5 overflow-hidden">
+                <div class="bg-blue-500 h-1.5 rounded-full" style="width: ${s.progressPercent}%"></div>
+              </div>
+            </td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold border ${statusColors[s.status]}">
+                ${s.status}
+              </span>
+            </td>
+            <td class="p-3.5 text-right space-x-1">
+              <button onclick="openStudentModal('${s.id}')" class="p-1.5 bg-blue-600/20 hover:bg-blue-600/40 text-blue-400 rounded-lg border border-blue-500/30" title="Full Demographic Profile">
+                <i class="fa-solid fa-id-card"></i>
+              </button>
+              <a href="${s.driveUrl}" target="_blank" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-lg border border-slate-700 inline-block" title="Google Drive Folder">
+                <i class="fa-brands fa-google-drive"></i>
+              </a>
+              <a href="${s.pdfUrl}" target="_blank" class="p-1.5 bg-slate-800 hover:bg-slate-700 text-rose-400 rounded-lg border border-slate-700 inline-block" title="Enrollment PDF">
+                <i class="fa-solid fa-file-pdf"></i>
+              </a>
+            </td>
+          </tr>
+        `;
+      });
+    }
+
+    function openStudentModal(studentId) {
+      const student = state.students.find(s => s.id === studentId);
+      if (!student) return;
+
+      document.getElementById('edit-student-id').value = student.id;
+      document.getElementById('modal-student-name-title').textContent = student.name;
+      document.getElementById('modal-student-id-subtitle').textContent = `ID: ${student.id} • ${student.campus} Campus`;
+
+      // Fill form fields
+      document.getElementById('edit-photo-url').value = student.photo || '';
+      document.getElementById('edit-name').value = student.name || '';
+      document.getElementById('edit-dob').value = student.dob || '';
+      document.getElementById('edit-age').value = student.age || '';
+      document.getElementById('edit-gender').value = student.gender || 'Female';
+      document.getElementById('edit-ged-status').value = student.gedStatus || 'High School Diploma';
+      document.getElementById('edit-highschool').value = student.highschool || '';
+
+      document.getElementById('edit-phone').value = student.phone || '';
+      document.getElementById('edit-inst-email').value = student.instEmail || '';
+      document.getElementById('edit-pers-email').value = student.persEmail || '';
+      document.getElementById('edit-address').value = student.address || '';
+
+      document.getElementById('edit-emg-name').value = student.emgName || '';
+      document.getElementById('edit-emg-phone').value = student.emgPhone || '';
+      document.getElementById('edit-emg-rel').value = student.emgRel || '';
+      document.getElementById('edit-parent-name').value = student.parentName || '';
+      document.getElementById('edit-parent-phone').value = student.parentPhone || '';
+      document.getElementById('edit-parent-email').value = student.parentEmail || '';
+
+      document.getElementById('edit-campus').value = student.campus || 'Casa Grande';
+      document.getElementById('edit-classroom').value = student.classroom || '';
+      document.getElementById('edit-assigned-ta').value = student.assignedTa || 'Miriam';
+      document.getElementById('edit-course').value = student.course || '';
+      document.getElementById('edit-credentials').value = student.credentials || '';
+      document.getElementById('edit-enrollment-date').value = student.enrollmentDate || '';
+      document.getElementById('edit-start-date').value = student.startDate || '';
+      document.getElementById('edit-end-date').value = student.endDate || '';
+      document.getElementById('edit-status').value = student.status || 'Activo';
+      document.getElementById('edit-scholarship').value = student.scholarship || '';
+      document.getElementById('edit-tuition').value = student.tuition || 0;
+      document.getElementById('edit-balance').value = student.balance || 0;
+
+      document.getElementById('edit-drive-url').value = student.driveUrl || '';
+      document.getElementById('edit-pdf-url').value = student.pdfUrl || '';
+      document.getElementById('edit-medical-alerts').value = student.medicalAlerts || '';
+      document.getElementById('edit-fun-facts').value = student.funFacts || '';
+
+      updateModalAvatarPreview(student.photo);
+
+      // Render Student Call Timeline inside Modal
+      const timelineContainer = document.getElementById('modal-student-call-history');
+      timelineContainer.innerHTML = '';
+      const logs = state.callLogs.filter(c => c.studentId === student.id);
+
+      if (logs.length === 0) {
+        timelineContainer.innerHTML = `<div class="text-slate-500 text-[11px] italic">No communication logs recorded for this student yet.</div>`;
+      } else {
+        logs.forEach(l => {
+          timelineContainer.innerHTML += `
+            <div class="border-l-2 border-blue-500 pl-3 py-1 space-y-0.5">
+              <div class="flex items-center justify-between text-[10px] text-slate-400">
+                <span class="font-bold text-white">${l.user} (${l.type})</span>
+                <span class="font-mono">${l.timestamp}</span>
+              </div>
+              <div class="text-slate-300">${l.notes}</div>
+            </div>
+          `;
+        });
+      }
+
+      document.getElementById('student-modal').classList.remove('hidden');
+    }
+
+    function closeStudentModal() {
+      document.getElementById('student-modal').classList.add('hidden');
+    }
+
+    function updateModalAvatarPreview(url) {
+      const container = document.getElementById('modal-avatar-preview');
+      if (url && url.trim() !== '') {
+        container.innerHTML = `<img src="${url}" class="w-full h-full object-cover">`;
+      } else {
+        container.innerHTML = `<i class="fa-solid fa-user"></i>`;
+      }
+    }
+
+    function saveStudentFromModal() {
+      const id = document.getElementById('edit-student-id').value;
+      let student = state.students.find(s => s.id === id);
+
+      if (!student) {
+        // Creating new student
+        student = { id: 'APCC-' + Math.floor(1000 + Math.random() * 9000), progressPercent: 0, externshipHours: 0, skillsChecklist: [] };
+        state.students.push(student);
+      }
+
+      student.photo = document.getElementById('edit-photo-url').value;
+      student.name = document.getElementById('edit-name').value;
+      student.dob = document.getElementById('edit-dob').value;
+      student.age = document.getElementById('edit-age').value;
+      student.gender = document.getElementById('edit-gender').value;
+      student.gedStatus = document.getElementById('edit-ged-status').value;
+      student.highschool = document.getElementById('edit-highschool').value;
+
+      student.phone = document.getElementById('edit-phone').value;
+      student.instEmail = document.getElementById('edit-inst-email').value;
+      student.persEmail = document.getElementById('edit-pers-email').value;
+      student.address = document.getElementById('edit-address').value;
+
+      student.emgName = document.getElementById('edit-emg-name').value;
+      student.emgPhone = document.getElementById('edit-emg-phone').value;
+      student.emgRel = document.getElementById('edit-emg-rel').value;
+      student.parentName = document.getElementById('edit-parent-name').value;
+      student.parentPhone = document.getElementById('edit-parent-phone').value;
+      student.parentEmail = document.getElementById('edit-parent-email').value;
+
+      student.campus = document.getElementById('edit-campus').value;
+      student.classroom = document.getElementById('edit-classroom').value;
+      student.assignedTa = document.getElementById('edit-assigned-ta').value;
+      student.course = document.getElementById('edit-course').value;
+      student.credentials = document.getElementById('edit-credentials').value;
+      student.enrollmentDate = document.getElementById('edit-enrollment-date').value;
+      student.startDate = document.getElementById('edit-start-date').value;
+      student.endDate = document.getElementById('edit-end-date').value;
+      student.status = document.getElementById('edit-status').value;
+      student.scholarship = document.getElementById('edit-scholarship').value;
+      student.tuition = Number(document.getElementById('edit-tuition').value);
+      student.balance = Number(document.getElementById('edit-balance').value);
+
+      student.driveUrl = document.getElementById('edit-drive-url').value;
+      student.pdfUrl = document.getElementById('edit-pdf-url').value;
+      student.medicalAlerts = document.getElementById('edit-medical-alerts').value;
+      student.funFacts = document.getElementById('edit-fun-facts').value;
+
+      saveState();
+      addAuditLog('Updated Student Profile', `${student.name} (${student.id})`);
+      closeStudentModal();
+      bootApp();
+    }
+
+    function openAddStudentModal() {
+      document.getElementById('edit-student-id').value = '';
+      document.getElementById('modal-student-name-title').textContent = 'New Student Registration';
+      document.getElementById('modal-student-id-subtitle').textContent = 'ID will be auto-generated';
+
+      document.querySelectorAll('#student-modal input').forEach(i => i.value = '');
+      document.getElementById('modal-student-call-history').innerHTML = '<div class="text-slate-500 text-[11px] italic">New Record</div>';
+
+      document.getElementById('student-modal').classList.remove('hidden');
+    }
+
+    /* ==========================================================================
+       6. SMART FOLLOW-UP ENGINE & TASK TAGGING (@MENTIONS)
+       ========================================================================== */
+    function renderFollowUpCenter() {
+      const overdueContainer = document.getElementById('followup-list-overdue');
+      const taggedContainer = document.getElementById('followup-list-tagged');
+      const week1Container = document.getElementById('followup-list-week1');
+
+      overdueContainer.innerHTML = '';
+      taggedContainer.innerHTML = '';
+      week1Container.innerHTML = '';
+
+      let cOverdue = 0, cTagged = 0, cWeek1 = 0;
+
+      // 1. Overdue contacts
+      state.students.forEach(s => {
+        const diffDays = Math.floor((new Date() - new Date(s.lastContactDate)) / (1000 * 60 * 60 * 24));
+        if (diffDays > 5) {
+          cOverdue++;
+          overdueContainer.innerHTML += `
+            <div class="glass-card p-3.5 rounded-xl border-l-4 border-rose-500 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-xs">${s.name}</span>
+                <span class="text-[10px] font-mono text-rose-400 bg-rose-500/10 px-2 py-0.5 rounded">${diffDays}d Inactive</span>
+              </div>
+              <div class="text-[11px] text-slate-400">Campus: ${s.campus} • Assigned: TA ${s.assignedTa}</div>
+              <button onclick="openQuickCallForStudent('${s.id}')" class="w-full py-1.5 bg-rose-600 hover:bg-rose-500 text-white rounded-lg text-xs font-bold transition">
+                Resolve Follow-Up
+              </button>
+            </div>
+          `;
+        }
+      });
+
+      // 2. Tagged tasks (@Mentions)
+      state.callLogs.forEach(c => {
+        if (c.notes.includes('@')) {
+          cTagged++;
+          taggedContainer.innerHTML += `
+            <div class="glass-card p-3.5 rounded-xl border-l-4 border-blue-500 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-xs">${c.studentName}</span>
+                <span class="text-[10px] font-mono text-blue-400">${c.timestamp}</span>
+              </div>
+              <div class="text-[11px] text-slate-300 font-medium bg-blue-950/50 p-2 rounded-lg border border-blue-800/40">
+                ${c.notes}
+              </div>
+              <div class="text-[10px] text-slate-400">Logged by: ${c.user}</div>
+            </div>
+          `;
+        }
+      });
+
+      // 3. Week-1 Trigger
+      state.students.forEach(s => {
+        const diffDays = Math.floor((new Date() - new Date(s.enrollmentDate)) / (1000 * 60 * 60 * 24));
+        if (diffDays <= 7 && diffDays >= 0) {
+          cWeek1++;
+          week1Container.innerHTML += `
+            <div class="glass-card p-3.5 rounded-xl border-l-4 border-amber-500 space-y-2">
+              <div class="flex items-center justify-between">
+                <span class="font-bold text-white text-xs">${s.name}</span>
+                <span class="text-[10px] font-mono text-amber-400">Day ${diffDays} Enrolled</span>
+              </div>
+              <div class="text-[11px] text-slate-400">Automated 7-Day Check-in Email Reminder for TA ${s.assignedTa}</div>
+              <button onclick="openQuickCallForStudent('${s.id}')" class="w-full py-1.5 bg-amber-600 hover:bg-amber-500 text-white rounded-lg text-xs font-bold transition">
+                Send Check-In Message
+              </button>
+            </div>
+          `;
+        }
+      });
+
+      document.getElementById('badge-count-overdue').textContent = cOverdue;
+      document.getElementById('badge-count-tagged').textContent = cTagged;
+      document.getElementById('badge-count-week1').textContent = cWeek1;
+      document.getElementById('nav-badge-tasks').textContent = cOverdue + cTagged;
+    }
+
+    /* ==========================================================================
+       7. CALL & TASK LOGGING ENGINE
+       ========================================================================== */
+    function populateStudentSelectDropdowns() {
+      const select = document.getElementById('call-student-id');
+      select.innerHTML = '';
+      state.students.forEach(s => {
+        select.innerHTML += `<option value="${s.id}">${s.name} (${s.id}) - TA ${s.assignedTa}</option>`;
+      });
+    }
+
+    function openQuickCallModal() {
+      document.getElementById('call-modal').classList.remove('hidden');
+    }
+
+    function openQuickCallForStudent(studentId) {
+      document.getElementById('call-student-id').value = studentId;
+      openQuickCallModal();
+    }
+
+    function closeCallModal() {
+      document.getElementById('call-modal').classList.add('hidden');
+    }
+
+    function handleSaveCallLog(e) {
+      e.preventDefault();
+      const studentId = document.getElementById('call-student-id').value;
+      const student = state.students.find(s => s.id === studentId);
+      const type = document.getElementById('call-type').value;
+      const outcome = document.getElementById('call-outcome').value;
+      const notes = document.getElementById('call-notes').value;
+
+      const newLog = {
+        id: 'cl' + (state.callLogs.length + 1),
+        studentId: studentId,
+        studentName: student ? student.name : 'Unknown',
+        user: state.currentUser ? state.currentUser.name : 'Staff',
+        type: type,
+        outcome: outcome,
+        notes: notes,
+        timestamp: new Date().toISOString().replace('T', ' ').substring(0, 16)
+      };
+
+      state.callLogs.unshift(newLog);
+
+      // Update student's last contact date
+      if (student) {
+        student.lastContactDate = new Date().toISOString().substring(0, 10);
+      }
+
+      saveState();
+      addAuditLog(`Logged Communication (${type})`, student ? `${student.name}` : studentId);
+      closeCallModal();
+      document.getElementById('call-notes').value = '';
+      bootApp();
+    }
+
+    /* ==========================================================================
+       8. EXTERNSHIP & SKILLS CHECK-OFF TRACKER
+       ========================================================================== */
+    function renderExternships() {
+      const container = document.getElementById('externship-cards-container');
+      container.innerHTML = '';
+
+      state.students.forEach(s => {
+        const targetHours = 160;
+        const percent = Math.min(100, Math.round((s.externshipHours / targetHours) * 100));
+
+        container.innerHTML += `
+          <div class="glass-card p-4 rounded-2xl border border-slate-800 space-y-3">
+            <div class="flex items-center justify-between">
+              <div>
+                <div class="font-bold text-white text-xs">${s.name}</div>
+                <div class="text-[10px] text-slate-400">${s.course}</div>
+              </div>
+              <span class="text-[10px] font-mono px-2 py-0.5 rounded ${percent >= 100 ? 'bg-emerald-500/20 text-emerald-400' : 'bg-blue-500/20 text-blue-400'}">
+                ${percent >= 100 ? 'Graduation Ready' : 'In Progress'}
+              </span>
+            </div>
+
+            <div>
+              <div class="flex justify-between text-[10px] text-slate-400 font-mono mb-1">
+                <span>Clinical Hours</span>
+                <span>${s.externshipHours} / ${targetHours} hrs</span>
+              </div>
+              <div class="w-full bg-slate-900 rounded-full h-2 overflow-hidden border border-slate-800">
+                <div class="bg-gradient-to-r from-blue-500 to-teal-400 h-2" style="width: ${percent}%"></div>
+              </div>
+            </div>
+
+            <div class="pt-2 border-t border-slate-800/80">
+              <div class="text-[10px] font-bold text-slate-400 uppercase mb-1.5">Required Skills Check-Off:</div>
+              <div class="flex flex-wrap gap-1">
+                ${s.skillsChecklist.map(skill => `
+                  <span class="px-2 py-0.5 bg-slate-900 text-slate-300 rounded border border-slate-800 text-[10px]">
+                    <i class="fa-solid fa-check text-emerald-400 mr-1"></i>${skill}
+                  </span>
+                `).join('')}
+              </div>
+            </div>
+          </div>
+        `;
+      });
+    }
+
+    /* ==========================================================================
+       9. USER MANAGEMENT & APPROVAL WORKFLOW
+       ========================================================================== */
+    function renderUserManagement() {
+      const tbody = document.getElementById('user-accounts-table');
+      tbody.innerHTML = '';
+
+      let pendingCount = 0;
+
+      state.users.forEach(u => {
+        if (u.status === 'Pending Approval') pendingCount++;
+
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3.5 font-bold text-white">${u.name}</td>
+            <td class="p-3.5 text-slate-300 font-mono">${u.email}</td>
+            <td class="p-3.5"><span class="px-2 py-0.5 bg-slate-800 rounded text-blue-400 font-bold">${u.role}</span></td>
+            <td class="p-3.5 text-slate-400 font-mono text-[11px]">2026-10-20</td>
+            <td class="p-3.5">
+              <span class="px-2.5 py-1 rounded-full text-[10px] font-bold ${u.status === 'Approved' ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30' : 'bg-amber-500/20 text-amber-400 border border-amber-500/30'}">
+                ${u.status}
+              </span>
+            </td>
+            <td class="p-3.5 text-right space-x-1">
+              ${u.status === 'Pending Approval' ? `
+                <button onclick="approveUser('${u.id}')" class="px-3 py-1 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-[10px]">
+                  Approve Account
+                </button>
+              ` : `
+                <span class="text-slate-500 text-[10px] italic">Active Access</span>
+              `}
+            </td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('nav-pending-count').textContent = pendingCount;
+      document.getElementById('users-pending-badge-header').textContent = `${pendingCount} Pending Approvals`;
+    }
+
+    function approveUser(userId) {
+      const user = state.users.find(u => u.id === userId);
+      if (user) {
+        user.status = 'Approved';
+        saveState();
+        addAuditLog('Approved User Account', `${user.name} (${user.email})`);
+        renderUserManagement();
+      }
+    }
+
+    /* ==========================================================================
+       10. AUDIT TRAIL & NOTIFICATION CENTER
+       ========================================================================== */
+    function renderAuditLogs() {
+      const tbody = document.getElementById('audit-trail-body');
+      tbody.innerHTML = '';
+
+      state.auditLogs.slice(0, 15).forEach(log => {
+        tbody.innerHTML += `
+          <tr class="hover:bg-slate-800/40 transition">
+            <td class="p-3 text-slate-400">${log.timestamp}</td>
+            <td class="p-3 text-white font-bold">${log.user}</td>
+            <td class="p-3 text-blue-400">${log.role}</td>
+            <td class="p-3 text-slate-200">${log.action}</td>
+            <td class="p-3 text-emerald-400">${log.target}</td>
+          </tr>
+        `;
+      });
+
+      document.getElementById('report-total-calls').textContent = state.callLogs.length;
+    }
+
+    function toggleAlertMenu() {
+      document.getElementById('alert-dropdown').classList.toggle('hidden');
+    }
+
+    function renderNotifications() {
+      const list = document.getElementById('alert-items-list');
+      list.innerHTML = '';
+
+      const tagged = state.callLogs.filter(c => c.notes.includes('@'));
+      tagged.forEach(t => {
+        list.innerHTML += `
+          <div class="p-2.5 bg-blue-950/50 rounded-xl border border-blue-800/40 space-y-1">
+            <div class="text-blue-400 font-bold flex items-center justify-between">
+              <span>Tagged Task</span>
+              <span class="text-[9px] font-mono">${t.timestamp}</span>
+            </div>
+            <div class="text-slate-200">${t.notes}</div>
+          </div>
+        `;
+      });
+
+      if (tagged.length === 0) {
+        list.innerHTML = `<div class="text-slate-500 py-2 text-center">No active notifications</div>`;
+      }
+    }
+
+    function resetSystemData() {
+      if (confirm('Are you sure you want to reset all CRM data to initial demo state?')) {
+        localStorage.clear();
+        state = {
+          users: INITIAL_USERS,
+          students: INITIAL_STUDENTS,
+          callLogs: INITIAL_CALL_LOGS,
+          auditLogs: INITIAL_AUDIT_LOGS,
+          currentUser: null
+        };
+        saveState();
+        location.reload();
+      }
+    }
+
+    /* Initial boot check */
+    window.onload = function() {
+      if (state.currentUser) {
+        bootApp();
+      }
+    };
+  </script>
+</body>
+</html>
